@@ -296,14 +296,12 @@ async def get_news(query: str, count: int = 3):
         
         from aiohttp import ClientSession
         async with ClientSession() as session:
-            # 构建URL，直接包含API key
-            url = f"{NEWS_API_URL}?title={query}&api_key={NEWS_API_KEY}&per_page=5"
+            url = f"{NEWS_API_URL}?title={query}&api_key={NEWS_API_KEY}&per_page=10"  # 获取更多条以防重复
             
             headers = {
                 "Content-Type": "application/json"
             }
             
-            # 使用POST方法
             async with session.post(url, headers=headers) as response:
                 if response.status != 200:
                     error_text = await response.text()
@@ -311,19 +309,26 @@ async def get_news(query: str, count: int = 3):
                     return {"error": "获取新闻失败", "status": response.status}
                 
                 news_data = await response.json()
+                seen_ids = set()  # 用于记录已见过的新闻ID
                 articles = []
                 
-                # 只取前5条新闻
-                for article in news_data.get('results', [])[:5]:
-                    articles.append({
-                        'id': article.get('id'),
-                        'title': article.get('title', '').split('...[')[0],
-                        'description': article.get('description', '').split('...[')[0],
-                        'published_at': article.get('published_at'),
-                        'author': article.get('author', {}).get('name'),
-                        'image': article.get('image'),
-                        'sentiment': article.get('sentiment', {}).get('overall', {}).get('polarity', 'neutral')
-                    })
+                for article in news_data.get('results', []):
+                    article_id = article.get('id')
+                    # 检查ID是否已存在，避免重复
+                    if article_id and article_id not in seen_ids:
+                        seen_ids.add(article_id)
+                        articles.append({
+                            'id': article_id,
+                            'title': article.get('title', '').split('...[')[0],
+                            'description': article.get('description', '').split('...[')[0],
+                            'published_at': article.get('published_at'),
+                            'author': article.get('author', {}).get('name'),
+                            'image': article.get('image') or f"https://source.unsplash.com/featured/800x400?{query}",
+                            'sentiment': article.get('sentiment', {}).get('overall', {}).get('polarity', 'neutral')
+                        })
+                        # 达到所需数量后退出
+                        if len(articles) >= count:
+                            break
 
                 return {
                     "status": news_data.get("status"),
