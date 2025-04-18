@@ -296,7 +296,8 @@ async def get_news(query: str, count: int = 3):
         
         from aiohttp import ClientSession
         async with ClientSession() as session:
-            url = f"{NEWS_API_URL}?title={query}&api_key={NEWS_API_KEY}&per_page=10"  # 获取更多条以防重复
+            # 获取10条新闻，以便筛选出不重复的
+            url = f"{NEWS_API_URL}?title={query}&api_key={NEWS_API_KEY}&per_page=10&search_in=title,description,content"
             
             headers = {
                 "Content-Type": "application/json"
@@ -309,30 +310,33 @@ async def get_news(query: str, count: int = 3):
                     return {"error": "获取新闻失败", "status": response.status}
                 
                 news_data = await response.json()
-                seen_ids = set()  # 用于记录已见过的新闻ID
+                seen_titles = set()  # 用于检查标题重复
                 articles = []
                 
+                # 遍历所有新闻，确保获取足够的不重复新闻
                 for article in news_data.get('results', []):
-                    article_id = article.get('id')
-                    # 检查ID是否已存在，避免重复
-                    if article_id and article_id not in seen_ids:
-                        seen_ids.add(article_id)
-                        articles.append({
-                            'id': article_id,
-                            'title': article.get('title', '').split('...[')[0],
-                            'description': article.get('description', '').split('...[')[0],
-                            'published_at': article.get('published_at'),
-                            'author': article.get('author', {}).get('name'),
-                            'image': article.get('image') or f"https://source.unsplash.com/featured/800x400?{query}",
-                            'sentiment': article.get('sentiment', {}).get('overall', {}).get('polarity', 'neutral')
-                        })
-                        # 达到所需数量后退出
-                        if len(articles) >= count:
-                            break
+                    title = article.get('title', '').split('...[')[0].strip()
+                    if not title or title in seen_titles:
+                        continue
+                        
+                    seen_titles.add(title)
+                    articles.append({
+                        'id': article.get('id'),
+                        'title': title,
+                        'description': article.get('description', '').split('...[')[0],
+                        'published_at': article.get('published_at'),
+                        'author': article.get('author', {}).get('name'),
+                        'image': article.get('image') or f"https://source.unsplash.com/featured/800x400?{query}",
+                        'sentiment': article.get('sentiment', {}).get('overall', {}).get('polarity', 'neutral')
+                    })
+                    
+                    # 获取到5条不重复的新闻就停止
+                    if len(articles) >= 5:
+                        break
 
                 return {
                     "status": news_data.get("status"),
-                    "articles": articles
+                    "articles": articles[:5]  # 确保最多返回5条
                 }
                 
     except Exception as e:
