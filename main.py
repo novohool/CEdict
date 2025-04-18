@@ -22,7 +22,7 @@ DB_URL = "https://github.com/skywind3000/ECDICT/releases/download/1.0.28/ecdict-
 DB_NAME = "stardict.db"
 
 # API 配置
-NEWS_API_KEY = "api_live_IwqHik1ho72TGua5sikcyup6ovAB3ml0Bfnezfs6qAW1DdvdfwYoU4mey3"
+NEWS_API_KEY = ""
 NEWS_API_URL = "https://api.apitube.io/v1/news/everything"
 
 def ensure_database():
