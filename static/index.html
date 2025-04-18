@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <title>智能词典 - 现代版</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+</head>
+<body>
+    <div class="app-container">
+        <!-- 侧边导航栏 -->
+        <nav class="sidebar">
+            <div class="sidebar-header">
+                <div class="logo">
+                    <i class="fas fa-book-open"></i>
+                    <span>智能词典</span>
+                </div>
+                <button class="toggle-sidebar" id="toggleSidebar">
+                    <i class="fas fa-bars"></i>
+                </button>
+            </div>
+            <div class="sidebar-content">
+                <ul class="nav-menu">
+                    <li class="nav-item active" data-section="search">
+                        <i class="fas fa-search"></i>
+                        <span>词典搜索</span>
+                    </li>
+                    <li class="nav-item" data-section="history">
+                        <i class="fas fa-history"></i>
+                        <span>搜索历史</span>
+                    </li>
+                    <li class="nav-item" data-section="favorites">
+                        <i class="fas fa-star"></i>
+                        <span>收藏单词</span>
+                    </li>
+                    <li class="nav-item" data-section="news-favorites">
+                        <i class="fas fa-bookmark"></i>
+                        <span>收藏新闻</span>
+                    </li>
+                </ul>
+            </div>
+        </nav>
+
+        <!-- 主内容区域 -->
+        <main class="main-content">
+            <!-- 搜索区域 -->
+            <section id="search-section" class="content-section active">
+                <div class="search-container">
+                    <div class="search-box-wrapper">
+                        <i class="fas fa-search search-icon"></i>
+                        <input type="text" class="search-box" id="search" placeholder="输入英文或中文...">
+                        <button class="search-btn" id="searchBtn">
+                            <div class="search-btn-content">
+                                <i class="fas fa-search"></i>
+                                <span>搜索</span>
+                            </div>
+                            <div class="search-btn-loading">
+                                <i class="fas fa-spinner fa-spin"></i>
+                            </div>
+                        </button>
+                    </div>
+                    <div class="search-tip">支持中英双向查询，输入即可搜索</div>
+                </div>
+
+                <div class="loader" id="loader">
+                    <div class="loader-dots">
+                        <div></div>
+                        <div></div>
+                        <div></div>
+                    </div>
+                </div>
+
+                <div class="content-container">
+                    <div id="result" class="result-container"></div>
+                    <div id="newsSection" class="news-container"></div>
+                </div>
+            </section>
+
+            <!-- 历史记录区域 -->
+            <section id="history-section" class="content-section">
+                <div class="section-header">
+                    <h2>搜索历史</h2>
+                    <button class="action-btn clear-btn" id="clearHistory">
+                        <i class="fas fa-trash-alt"></i>
+                        <span>清空历史</span>
+                    </button>
+                </div>
+                <div id="historyList" class="list-container"></div>
+            </section>
+
+            <!-- 收藏单词区域 -->
+            <section id="favorites-section" class="content-section">
+                <div class="section-header">
+                    <h2>收藏单词</h2>
+                    <button class="action-btn clear-btn" id="clearFavorites">
+                        <i class="fas fa-trash-alt"></i>
+                        <span>清空收藏</span>
+                    </button>
+                </div>
+                <div id="favoritesList" class="list-container"></div>
+            </section>
+
+            <!-- 收藏新闻区域 -->
+            <section id="news-favorites-section" class="content-section">
+                <div class="section-header">
+                    <h2>收藏新闻</h2>
+                </div>
+                <div id="newsFavoritesList" class="news-favorites-container"></div>
+            </section>
+        </main>
+    </div>
+    <script src="js/api.js" defer></script>
+    <script src="js/app.js" defer></script>
+</body>
+</html>
